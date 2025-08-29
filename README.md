@@ -241,7 +241,7 @@ When you need to generate a new access token (either for first-time setup or whe
    If using the published package:
 
    ```bash
-   npx @alexarevalo.ia/mcp-server-ticktick ticktick-auth
+   npx @alexarevalo.ai/mcp-server-ticktick ticktick-auth
    ```
 
    If running the MCP server locally:

@@ -21,8 +21,8 @@ export const TickTickTaskSchema = z.object({
   desc: z.string().optional(),
   timeZone: z.string().optional(),
   repeatFlag: z.string().optional(),
-  startDate: z.string().optional(),
-  dueDate: z.string().optional(),
+  startDate: z.union([z.string(), z.number()]).optional(),
+  dueDate: z.union([z.string(), z.number()]).optional(),
   reminders: z.array(z.string()).optional(),
   priority: z.number().optional(),
   status: z.number(),
@@ -35,7 +35,7 @@ export const TickTickTaskSchema = z.object({
         status: z.number(),
         title: z.string(),
         sortOrder: z.number().optional(),
-        startDate: z.string().optional(),
+        startDate: z.union([z.string(), z.number()]).optional(),
         isAllDay: z.boolean().optional(),
         timeZone: z.string().optional(),
         completedTime: z.union([z.string(), z.number()]).optional(),
@@ -47,9 +47,9 @@ export const TickTickTaskSchema = z.object({
 export const TickTickCheckListItemSchema = z.object({
   title: z.string().describe('Subtask item title'),
   startDate: z
-    .string()
+    .union([z.string(), z.number()])
     .optional()
-    .describe(`Subtask item start date in "yyyy-MM-dd'T'HH:mm:ssZ" format`),
+    .describe(`Subtask item start date in "yyyy-MM-dd'T'HH:mm:ssZ" format or Unix timestamp`),
   isAllDay: z.boolean().optional().describe('Is all day subtask item'),
   sortOrder: z.number().optional().describe('Subtask item sort order'),
   timeZone: z

@@ -5,6 +5,39 @@ import {
   TickTickTaskSchema,
 } from '../common/types.js';
 
+/**
+ * Normalizes timestamp fields from numbers to ISO strings
+ * TickTick API returns completedTime as Unix timestamp (number),
+ * but we need ISO 8601 strings for consistent schema validation
+ */
+function normalizeTimestamps(data: any): any {
+  if (!data) return data;
+
+  const convertTimestamp = (value: any) => {
+    if (typeof value === 'number') {
+      return new Date(value).toISOString();
+    }
+    return value;
+  };
+
+  // Normalize task-level completedTime
+  if (data.completedTime !== undefined) {
+    data.completedTime = convertTimestamp(data.completedTime);
+  }
+
+  // Normalize completedTime in subtask items
+  if (data.items && Array.isArray(data.items)) {
+    data.items = data.items.map((item: any) => ({
+      ...item,
+      completedTime: item.completedTime !== undefined
+        ? convertTimestamp(item.completedTime)
+        : item.completedTime,
+    }));
+  }
+
+  return data;
+}
+
 export const GetTaskByIdsOptionsSchema = z.object({
   projectId: z.string().describe('Project identifier'),
   taskId: z.string().describe('Task identifier'),
@@ -118,7 +151,10 @@ export async function getTaskByIds(
 
   const response = await ticktickRequest(url);
 
-  return GetTaskByIdsResponseSchema.parse(response);
+  // Normalize timestamps before validation
+  const normalizedResponse = normalizeTimestamps(response);
+
+  return GetTaskByIdsResponseSchema.parse(normalizedResponse);
 }
 
 export async function createTask(
